@@ -1,3 +1,4 @@
+import exceptions.*;
 
 public abstract class Conta implements IConta {
 	
@@ -17,16 +18,34 @@ public abstract class Conta implements IConta {
 
 	@Override
 	public void sacar(double valor) {
+		if (valor <= 0) {
+			throw new InvalidValueException("O valor do saque deve ser maior do que zero.");
+		}
+		if (valor > saldo) {
+			throw new InvalidOperationException("Saldo insuficiente.");
+		}
 		saldo -= valor;
 	}
 
 	@Override
 	public void depositar(double valor) {
+		if (valor <= 0) {
+			throw new InvalidValueException("O valor do depósito deve ser maior do que zero.");
+		}
 		saldo += valor;
 	}
 
 	@Override
 	public void transferir(double valor, IConta contaDestino) {
+		if (contaDestino == this) {
+			throw new InvalidOperationException("Não é possível transferir para si mesmo");
+		}
+		if (valor <= 0) {
+			throw new InvalidValueException("O valor da transferência deve ser maior que zero.");
+		}
+		if (valor > saldo) {
+			throw new InvalidOperationException("Saldo insuficiente.");
+		}
 		this.sacar(valor);
 		contaDestino.depositar(valor);
 	}
